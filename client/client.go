@@ -22,8 +22,8 @@ func (c *Client) Close() {
 	c.Close()
 }
 
-func (c *Client) PhoneticTranslator(lang, phrase string, base64 bool) (*entities.PhoneticTranslatorResponse, error) {
-	translator := entities.NewPhoneticTranslatorRequest(phrase, lang, base64)
+func (c *Client) PhoneticTranslator(lang, phrase string, base64 bool, params map[string]string) (*entities.PhoneticTranslatorResponse, error) {
+	translator := entities.NewPhoneticTranslatorRequest(phrase, lang, base64, params)
 
 	url, err := translator.GetUrl(c.AccessToken)
 	if err != nil {

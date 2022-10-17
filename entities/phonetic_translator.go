@@ -21,12 +21,13 @@ var availableLangs = map[string]string{
 const urlQuery = "https://easypronunciation.com/%s-api.php"
 
 type PhoneticTranslatorRequest struct {
-	Phrase   string `json:"phrase"`
-	Language string `json:"language"`
-	Base64   bool   `json:"base64"`
+	Phrase   string            `json:"phrase"`
+	Language string            `json:"language"`
+	Base64   bool              `json:"base64"`
+	Params   map[string]string `json:"params"`
 }
 
-func NewPhoneticTranslatorRequest(phrase, language string, base64 bool) *PhoneticTranslatorRequest {
+func NewPhoneticTranslatorRequest(phrase, language string, base64 bool, params map[string]string) *PhoneticTranslatorRequest {
 	if base64 {
 		phrase = b64.StdEncoding.EncodeToString([]byte(phrase))
 	}
@@ -34,6 +35,7 @@ func NewPhoneticTranslatorRequest(phrase, language string, base64 bool) *Phoneti
 		Phrase:   phrase,
 		Language: language,
 		Base64:   base64,
+		Params:   params,
 	}
 }
 
@@ -42,11 +44,18 @@ func (s PhoneticTranslatorRequest) GetParams(token string) url.Values {
 	if s.Base64 {
 		base64 = "1"
 	}
-	return url.Values{
+
+	values := url.Values{
 		"access_token": []string{token},
 		"phrase":       []string{s.Phrase},
 		"base64":       []string{base64},
 	}
+
+	for k, v := range s.Params {
+		values[k] = []string{v}
+	}
+
+	return values
 }
 
 func (r PhoneticTranslatorRequest) GetUrl(token string) (string, error) {
